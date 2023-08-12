@@ -22,16 +22,14 @@ Este repositorio contiene todo el código y documentación relacionados con nues
 
 ## Cómo empezar
 
-1. Clona el repositorio: `git clone [URL del repositorio]`
-2. Navega al directorio de código: `cd codigo`
-3. [Instrucciones específicas para la compilación y despliegue del código en el robot]
+1. Clona el repositorio: `git clone https://github.com/JuanMudi/Vex-2023-24.git`
+2. Navega al directorio del código.
+3. Abre el código en VexCode Pro V5.
+4. Ejecuta el código.
+
 
 ## Contribuyentes
 
-- [Nombre del Miembro 1]
-- [Nombre del Miembro 2]
-- [Nombre del Miembro 3]
-... etc.
 
 ## Licencia
 
