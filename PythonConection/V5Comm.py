@@ -1,55 +1,75 @@
 import serial
 from serial.tools.list_ports import comports
+import threading
+from threading import Lock
 
-def encontrar_puerto_serial():
-    try:
-        # Buscar dispositivos serie disponibles
-        dispositivos = comports()
+class V5SerialComms:
+
+    def __init__(self):
+        self.__started = False
+        self.__ser = None
+        self.__detections = AIRecord(Position(0, 0, 0, 0, 0, 0, 0, 0), [])
+        self.__detectionLock = Lock()
+
+    def start(self):
+        self.__started = True
+        self.__thread = threading.Thread(target=self.__run, args=())
+        self.__thread.daemon = True
+        self.__thread.start()
+
+    def __run(self):
+        count = 1
+        while self.__started:  # Continue running while the thread is started
+            port = None
+            try:
+                if not self.__ser:
+                    devices = [dev for dev in comports() if "V5" in dev.description and "User" in dev.description]
+                    if len(devices) == 0 and count <= 5:
+                        print("No V5 Brain detected.")
+                        time.sleep(1)
+                        count += 1
+                        continue
+                    elif count > 5:
+                        print("No V5 Brain detected after 5 attempts.")
+                        return
+                    else:
+                        port = devices[0].device
+
+                    print("Connecting to ", port)
+
+                    self.__ser = serial.Serial(port, 115200, timeout=10)
+                    self.__ser.flushInput()
+                    self.__ser.flushOutput()
+
+                data = self.__ser.readline().decode("utf-8").rstrip()
+                if data == "AA55CC3301":
+                    self.__detectionLock.acquire()
+                    myPacket = V5SerialPacket(self.__MAP_PACKET_TYPE, self.__detections)
+                    self.__detectionLock.release()
+                    data = myPacket.to_Serial()
+                    self.__ser.write(data)
+
+            except serial.SerialException as e:
+                print("Could not connect to ", port, ". Exception: ", e)
+                time.sleep(1)
         
-        for puerto in dispositivos:
-            # Verificar si el dispositivo tiene una descripción que contiene "V5" y "User"
-            if "V5" in puerto.description and "User" in puerto.description:
-                return puerto.device
-        
-        # Si no se encuentra ningún puerto, devuelve None
-        print("No se encontró ningún puerto V5 Brain.")
-        return None
-    except Exception as e:
-        print("Error al buscar el puerto serial:", e)
-        return None
+            if self.__ser and self.__ser.isOpen():
+                self.__ser.close()
 
-def establecer_conexion(puerto_serial, baudrate=115200, timeout=1):
-    try:
-        # Establecer la conexión serial
-        conexion = serial.Serial(puerto_serial, baudrate, timeout=timeout)
-        print("Conexión establecida en el puerto", puerto_serial)
-        return conexion
-    except serial.SerialException as e:
-        print("Error al conectar al puerto", puerto_serial)
-        print("Exception:", e)
-        return None
+        print("V5SerialComms thread stopped.")
 
-def main():
-    puerto = encontrar_puerto_serial()
-    if puerto is None:
-        return
-    
-    baudrate = 115200  # Puedes cambiar esto si necesitas otro baudrate
-    timeout = 1  # Tiempo de espera para lectura
+    def setDetectionData(self, data: AIRecord):
+        self.__detectionLock.acquire()
+        self.__detections = data
+        self.__detectionLock.release()
 
-    # Establecer la conexión serial
-    conexion = establecer_conexion(puerto, baudrate, timeout)
-    
-    if conexion is not None:
-        try:
-            # Ejemplo de lectura serial
-            while True:
-                data = conexion.readline().strip()
-                if data:
-                    print("Datos recibidos:", data.decode("utf-8"))
-        except KeyboardInterrupt:
-            print("Deteniendo la lectura.")
-            conexion.close()
+    def stop(self):
+        self.__started = False
+        self.__thread.join()
+
+    def __del__(self):
+        self.stop()
 
 if __name__ == "__main__":
-    main()
+    v5_serial = V5SerialComms()
+    v5_serial.start()
