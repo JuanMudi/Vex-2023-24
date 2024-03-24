@@ -25,7 +25,7 @@ class V5SerialComms:
                 if not self.__ser:
                     devices = [dev for dev in comports() if "V5" in dev.description and "User" in dev.description]
                     if len(devices) == 0 and count <= 5:
-                        print("No V5 Brain detected.")
+                        print("No V5.")
                         time.sleep(1)
                         count += 1
                         continue
