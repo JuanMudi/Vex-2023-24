@@ -35,7 +35,7 @@ def enviar_datos(conexion):
         while True:
             data = conexion.readline().strip()
             if data.decode("utf-8") == "AA55CC3301":
-                print("Mensaje recibido:", data.decode("utf-8"))
+                print("Mensaje recibido desde V5:", data.decode("utf-8"))
                 # Envía los datos que desees aquí
                 conexion.write(b"Probando conexion desde RaspBerry\r\n")
     except KeyboardInterrupt:
