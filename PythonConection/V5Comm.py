@@ -50,6 +50,7 @@ def sensor_example(conexion):
         while True:
             # Envía los datos de un sensor de ejemplo
             sensor_data = random.randint(0, 1023)
+            sensor_data = str(sensor_data) + "\n"
             conexion.write(sensor_data.encode("utf-8"))
             print("Dato enviado:", sensor_data)
             time.sleep(1)
