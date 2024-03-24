@@ -48,6 +48,7 @@ class V5SerialComms:
                     self.__detectionLock.release()
                     data = myPacket.to_Serial()
                     self.__ser.write(data)
+                    print("Paquete de datos enviado correctamente.")
 
             except serial.SerialException as e:
                 print("Could not connect to ", port, ". Exception: ", e)
