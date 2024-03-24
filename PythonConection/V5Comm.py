@@ -8,8 +8,6 @@ class V5SerialComms:
     def __init__(self):
         self.__started = False
         self.__ser = None
-        self.__detections = AIRecord(Position(0, 0, 0, 0, 0, 0, 0, 0), [])
-        self.__detectionLock = Lock()
 
     def start(self):
         self.__started = True
@@ -44,10 +42,7 @@ class V5SerialComms:
                 data = self.__ser.readline()
                 print("Bytes recibidos:", data)
                 if data == "AA55CC3301":
-                    self.__detectionLock.acquire()
-                    myPacket = V5SerialPacket(self.__MAP_PACKET_TYPE, self.__detections)
-                    self.__detectionLock.release()
-                    data = myPacket.to_Serial()
+                    data = "hola".to_Serial()
                     self.__ser.write(data)
                     print("Paquete de datos enviado correctamente.")
 
@@ -59,15 +54,6 @@ class V5SerialComms:
                 self.__ser.close()
 
         print("V5SerialComms thread stopped.")
-
-    def setDetectionData(self, data: AIRecord):
-        self.__detectionLock.acquire()
-        self.__detections = data
-        self.__detectionLock.release()
-
-    def stop(self):
-        self.__started = False
-        self.__thread.join()
 
     def __del__(self):
         self.stop()
