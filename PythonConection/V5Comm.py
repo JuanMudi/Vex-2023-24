@@ -51,11 +51,12 @@ def sensor_example(conexion):
             # Envía los datos de un sensor de ejemplo
             sensor_data = random.randint(0, 1023)
             conexion.write(sensor_data.encode("utf-8"))
+            print("Dato enviado:", sensor_data)
             time.sleep(1)
     except KeyboardInterrupt:
         print("Deteniendo el envío de datos.")
         conexion.close()
-        
+
 
     
 
