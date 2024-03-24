@@ -20,6 +20,7 @@ class V5SerialComms:
         while self.__started:  # Continue running while the thread is started
             port = None
             try:
+                print("Searching for V5 Brain...")
                 if not self.__ser:
                     devices = [dev for dev in comports() if "V5" in dev.description and "User" in dev.description]
                     if len(devices) == 0 and count <= 5:
