@@ -1,3 +1,5 @@
+import random
+import time
 import serial
 from serial.tools.list_ports import comports
 
@@ -37,11 +39,25 @@ def enviar_datos(conexion):
             if data.decode("utf-8") == "AA55CC3301":
                 print("Mensaje recibido desde V5:", data.decode("utf-8"))
                 # Envía los datos que desees aquí
-                conexion.write(b"Probando conexion desde RaspBerry\r\n")
+                sensor_example(conexion)
                 print("Datos enviados a V5.")
     except KeyboardInterrupt:
         print("Deteniendo el envío de datos.")
         conexion.close()
+
+def sensor_example(conexion):
+    try:
+        while True:
+            # Envía los datos de un sensor de ejemplo
+            sensor_data = random.randint(0, 1023)
+            conexion.write(sensor_data.encode("utf-8"))
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Deteniendo el envío de datos.")
+        conexion.close()
+        
+
+    
 
 def main():
     puerto = encontrar_puerto_serial()
