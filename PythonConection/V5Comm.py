@@ -43,8 +43,7 @@ class V5SerialComms:
 
                 data = self.__ser.readline()
                 print("Bytes recibidos:", data)
-                data_decoded = data.decode("utf-8").rstrip()
-                if data_decoded == "AA55CC3301":
+                if data == "AA55CC3301":
                     self.__detectionLock.acquire()
                     myPacket = V5SerialPacket(self.__MAP_PACKET_TYPE, self.__detections)
                     self.__detectionLock.release()
