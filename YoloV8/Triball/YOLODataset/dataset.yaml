@@ -1,0 +1,4 @@
+train: C:\Users\J_mud\Vex-2023-24\ObjectDetection\YoloV8\Triball\YOLODataset/images/train/
+val: C:\Users\J_mud\Vex-2023-24\ObjectDetection\YoloV8\Triball\YOLODataset/images/val/
+nc: 1
+names: ["triball"]
